@@ -5,6 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Restaurant {
+	@Override
+	public String toString() {
+		return "Restaurant [id=" + id + ", name=" + name + ", quantity=" + quantity + ", serviceableAreas="
+				+ serviceableAreas + ", price=" + price + ", dish=" + dish + ", rating=" + rating + ", ratingCount="
+				+ ratingCount + ", reviews=" + reviews + "]";
+	}
+
 	private int id;
 	private String name; 
 	private int quantity;

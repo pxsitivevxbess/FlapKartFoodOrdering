@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import Model.Order;
 import Model.Rating;
@@ -17,11 +18,12 @@ public class UserDAO {
 
 	private static UserDAO userDAO = null;
 	//Unorderd_set equivalent in Java -> HashSet
-	private HashMap<Integer, User> usersList = new HashMap<>();
-	private HashMap<String, Restaurant> restaurantList = new HashMap<>();
-	private HashMap<String, ArrayList<Rating>> ratingRestaurantWise = new HashMap<>();
-	private HashMap<Integer, ArrayList<Order>> userWiseOrders = new HashMap<>();
-	private User loggedInUser = null;
+	//Unordered_map equivalent in Java -> HashMap
+	private HashMap<Integer, User> usersList = new HashMap<>();//<MobileNumber, User Obj>
+	private HashMap<String, Restaurant> restaurantList = new HashMap<>(); //<Name of Restaurant,Restaurant Obj>
+	private HashMap<String, ArrayList<Rating>> ratingRestaurantWise = new HashMap<>();//<Restaurant name, rating>
+	private HashMap<Integer, ArrayList<Order>> userWiseOrders = new HashMap<>(); //<UserId, [orders]>
+	private User loggedInUser = null;  // In Memory variable for currently logged in user
 	public static UserDAO getInstance() {
 		if(userDAO==null)
 		{
@@ -42,13 +44,15 @@ public class UserDAO {
 		{
 			loggedInUser = userToLogin;
 		}
+		System.out.println("Logged in user"+loggedInUser);
 		return userToLogin;
 	}
 	public Restaurant registerRestaurant(String name, String servingAreas, String dish, Integer price, Integer quantity)
 	{
 		int restaurantId = IDGenerator.getId();
-		Restaurant newRestaurant = new Restaurant(restaurantId, name, restaurantId, servingAreas, restaurantId, dish);
+		Restaurant newRestaurant = new Restaurant(restaurantId, name,quantity,servingAreas, price, dish);
 		restaurantList.putIfAbsent(name, newRestaurant);
+		System.out.println("Number of restaurant"+restaurantList.size());
 		return newRestaurant;
 	}
 	public Integer updateQuantity(String restaurantName, Integer quantity) {
@@ -81,8 +85,11 @@ public class UserDAO {
 			    newRatingList.add(newRating);
 			    ratingRestaurantWise.put(restaurantName, newRatingList);
 			}
+			System.out.println("Average rating of restaurant"+restaurant.getRating());
+			System.out.println("Number of rating received "+ratingRestaurantWise.get(restaurantName).size());
 			return newRating;
 		}
+		
 		return null;
 	}
 	
@@ -94,6 +101,7 @@ public class UserDAO {
         else {
         	Collections.sort(sortedRestaurants, Comparator.comparingDouble(Restaurant::getRating));
         }
+        System.out.println("Top of show restaurant"+sortedRestaurants.get(0));
         return sortedRestaurants;
 
 	}
@@ -105,5 +113,25 @@ public class UserDAO {
 			return null;
 		}
 		Order order = new Order();
+		order.setUserId(loggedInUser.getUserId());
+		order.setQuantity(quantity);
+		order.setRestaurantId(restaurantList.get(restaurantName).getId());
+		order.setId(IDGenerator.getId());
+		System.out.println("Current available quantity of restaurant"+ restaurant.getQuantity());
+		System.out.println("quantity requested"+ quantity);
+		restaurant.setQuantity(restaurant.getQuantity()-quantity);
+		System.out.println("New available quantity of restaurant"+ restaurant.getQuantity());
+		restaurantList.put(restaurantName, restaurant);
+		ArrayList<Order> orderHistory =userWiseOrders.get(loggedInUser.getUserId())!=null?userWiseOrders.get(loggedInUser.getUserId()):new ArrayList<Order>();
+		orderHistory.add(order);
+		userWiseOrders.put(loggedInUser.getUserId(), orderHistory);
+		System.out.println("Number of orders placed by user"+userWiseOrders.get(loggedInUser.getUserId()).size());
+		return order;
+		
+	}
+	public ArrayList<Order> orderHistory()
+	{
+		 return Optional.ofNullable(userWiseOrders.get(loggedInUser.getUserId()))
+                 .orElse(new ArrayList<>());
 	}
 }

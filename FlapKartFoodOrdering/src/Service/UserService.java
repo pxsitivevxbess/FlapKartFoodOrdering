@@ -1,6 +1,9 @@
 package Service;
 
+import java.util.ArrayList;
+
 import DAO.UserDAO;
+import Model.Order;
 import Model.User;
 
 public class UserService {
@@ -35,6 +38,14 @@ public class UserService {
 			return null;
 		}
 		return userDAO.loginUser(mobileNumber);
+	}
+	public ArrayList<Order> order_history()
+	{
+		ArrayList<Order> orderHistory =userDAO.orderHistory();
+		System.out.println("Number of order placed by user"+orderHistory.size());
+		System.out.println("First order place by user"+orderHistory.get(0));
+		return orderHistory;
+
 	}
 
 }

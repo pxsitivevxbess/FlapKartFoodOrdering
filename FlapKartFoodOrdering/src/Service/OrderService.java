@@ -5,6 +5,7 @@ import Model.Order;
 
 public class OrderService {
 	private static OrderService orderService = null;
+	private UserDAO userDAO = UserDAO.getInstance();
 	public static OrderService getInstance()
 	{
 		if(orderService == null)
@@ -15,7 +16,7 @@ public class OrderService {
 	}
 	public Order place_order(String restaurantName, Integer quantity)
 	{
-		return UserDAO.placeOrder(restaurantName, quantity);
+		return userDAO.placeOrder(restaurantName, quantity);
 	}
 
 }

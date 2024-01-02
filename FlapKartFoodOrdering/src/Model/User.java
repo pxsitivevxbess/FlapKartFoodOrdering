@@ -8,6 +8,13 @@ import java.util.UUID;
 import Constants.Gender;
 
 public class User {
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", name=" + name + ", mobileNumber=" + mobileNumber + ", locality=" + locality
+				+ ", orderHistory=" + orderHistory + ", geneder=" + geneder + ", restaurant=" + restaurant + ", orders="
+				+ orders + "]";
+	}
+
 	private int userId;
 	private String name;
 	private Integer mobileNumber;

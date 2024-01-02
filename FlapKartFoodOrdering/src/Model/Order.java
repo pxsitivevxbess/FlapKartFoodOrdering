@@ -1,6 +1,11 @@
 package Model;
 
 public class Order {
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", userId=" + userId + ", restaurantId=" + restaurantId + ", quantity=" + quantity
+				+ "]";
+	}
 	private int id;
 	private int userId;
 	private int restaurantId;
