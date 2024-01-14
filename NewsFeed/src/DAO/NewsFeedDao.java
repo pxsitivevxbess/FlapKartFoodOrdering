@@ -14,7 +14,7 @@ import Utils.IDGenerator;
 
 public class NewsFeedDao {
 
-	private static NewsFeedDao newsFeedDao = null;
+	private static volatile NewsFeedDao newsFeedDao = null; //Thread safe singleton class
 	private HashMap<String, User> usersDb = new HashMap<>();  //<UserName, User>
 	private HashMap<Integer, Post> postDb = new HashMap<>() ; //<PostId, Post>
 	private User currentLoggedInUser = null;
@@ -22,7 +22,10 @@ public class NewsFeedDao {
 	{
 		if(newsFeedDao==null)
 		{
-			newsFeedDao = new NewsFeedDao();
+			synchronized(NewsFeedDao.class) {
+			if(newsFeedDao==null)//Two time checking because there might be a context switch after first if and before synchronized
+			  newsFeedDao = new NewsFeedDao();
+			}
 		}
 		return newsFeedDao;
 	}
