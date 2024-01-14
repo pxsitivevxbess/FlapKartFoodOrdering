@@ -13,13 +13,19 @@ import Model.User;
 import Utils.IDGenerator;
 
 public class NewsFeedDao {
-
+    //Volatile because we want this to be directly written to memory, no cache
 	private static volatile NewsFeedDao newsFeedDao = null; //Thread safe singleton class
 	private HashMap<String, User> usersDb = new HashMap<>();  //<UserName, User>
 	private HashMap<Integer, Post> postDb = new HashMap<>() ; //<PostId, Post>
 	private User currentLoggedInUser = null;
 	public static NewsFeedDao getInstance()
 	{
+		//Moving the synchronized block above the first if statement would eliminate the 
+		//need for the second check, but it would result in every call to 
+		//getInstance acquiring the lock, which can be inefficient 
+		//and impact performance in a multithreaded environment. 
+		//The double-checked locking pattern aims to strike a balance
+		//between performance and thread safety.
 		if(newsFeedDao==null)
 		{
 			synchronized(NewsFeedDao.class) {
